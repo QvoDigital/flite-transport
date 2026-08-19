@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#111214" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#fcfcfc" media="(prefers-color-scheme: light)" />
+
+    <title>Flite Transport - Last Mile Delivery, Burlington Ontario</title>
+    <meta
+      name="description"
+      content="Flite Transport is a last mile delivery partner in Burlington, Ontario. Express, same-day and scheduled delivery with real-time tracking and photo proof of delivery."
+    />
+    <link rel="canonical" href="https://flitetransport.com/" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Flite Transport" />
+    <meta property="og:title" content="Flite Transport - Last Mile Delivery, Burlington Ontario" />
+    <meta
+      property="og:description"
+      content="Your transportation partner for express, same-day and scheduled last mile delivery."
+    />
+    <meta property="og:url" content="https://flitetransport.com/" />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <!--
+      The theme is resolved before first paint so the page never flashes the wrong mode.
+      Kept inline and tiny on purpose: a deferred script would run too late to help.
+    -->
+    <script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('flite-theme');
+          var system = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+          document.documentElement.dataset.theme = stored || system;
+        } catch (e) {
+          document.documentElement.dataset.theme = 'dark';
+        }
+      })();
+    </script>
+
+    <!--
+      LocalBusiness, not MovingCompany. The earlier type said Flite moves house contents, which is
+      a different industry and a wrong signal to hand a search engine about what it sells.
+
+      Deliberately absent, because the answers are not known and inventing them would be lying to
+      a machine that will repeat it: openingHoursSpecification, areaServed, geo coordinates,
+      aggregateRating, priceRange. Fill these in from the client and they are worth real ranking,
+      particularly areaServed and hours.
+    -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "LocalBusiness",
+        "@id": "https://flitetransport.com/#business",
+        "name": "Flite Transport",
+        "description": "Last mile delivery partner in Burlington, Ontario, offering express, same-day and scheduled delivery with GPS tracking and photo proof of delivery.",
+        "url": "https://flitetransport.com/",
+        "telephone": "+1-905-802-0305",
+        "email": "info@flitetransport.com",
+        "address": {
+          "@type": "PostalAddress",
+          "streetAddress": "5063 North Service Road, Suite 100",
+          "addressLocality": "Burlington",
+          "addressRegion": "ON",
+          "postalCode": "L7L 5H6",
+          "addressCountry": "CA"
+        },
+        "hasOfferCatalog": {
+          "@type": "OfferCatalog",
+          "name": "Service levels",
+          "itemListElement": [
+            {
+              "@type": "Offer",
+              "itemOffered": { "@type": "Service", "name": "Express delivery" }
+            },
+            {
+              "@type": "Offer",
+              "itemOffered": { "@type": "Service", "name": "Same-day delivery" }
+            },
+            {
+              "@type": "Offer",
+              "itemOffered": { "@type": "Service", "name": "Scheduled delivery" }
+            }
+          ]
+        },
+        "sameAs": [
+          "https://www.linkedin.com/company/flite-transport/",
+          "https://www.instagram.com/flitetransport/",
+          "https://www.facebook.com/flitetransport",
+          "https://twitter.com/flite_transport"
+        ]
+      }
+    </script>
+
+    <!--
+      There is deliberately no FAQPage block here any more. The questions are their own document
+      at /faq, and FAQPage markup has to sit on the URL that visibly shows the answers; leaving it
+      here would have this page claiming an FAQ it no longer renders, which Google treats as a
+      structured data violation. The block lives in faq/index.html.
+    -->
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

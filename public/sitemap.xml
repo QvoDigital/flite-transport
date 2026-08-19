@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Two real documents, two entries. Anchors are not listed: Google indexes documents, not fragments,
+  and padding a sitemap with #hash URLs is a known way to look like you are gaming it.
+
+  /faq is the page most likely to earn rankings on its own, because it answers question-shaped
+  queries that the home page cannot target without turning into a wall of text.
+-->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://flitetransport.com/</loc>
+    <changefreq>monthly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://flitetransport.com/faq/</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+</urlset>

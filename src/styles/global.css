@@ -1,0 +1,209 @@
+@import '@fontsource-variable/montserrat';
+@import '@fontsource-variable/raleway';
+@import '@fontsource-variable/roboto-mono';
+@import './tokens.css';
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+* {
+  margin: 0;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--surface);
+  color: var(--text-body);
+  font-family: var(--font-body);
+  font-size: var(--step-body);
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  /* The route is drawn to the full page height, so horizontal overflow must never appear. */
+  overflow-x: hidden;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-display);
+  font-weight: 800;
+  line-height: 1.04;
+  letter-spacing: -0.022em;
+  color: var(--text);
+  text-wrap: balance;
+}
+
+h1 {
+  font-size: var(--step-display);
+}
+h2 {
+  font-size: var(--step-h2);
+}
+h3 {
+  font-size: var(--step-h3);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+p {
+  text-wrap: pretty;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+img,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+button,
+input,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+/* Focus: one treatment, visible in both themes, never removed. */
+:focus-visible {
+  outline: 2px solid var(--red);
+  outline-offset: 2px;
+  border-radius: var(--radius);
+}
+:where(:focus:not(:focus-visible)) {
+  outline: none;
+}
+
+.shell {
+  width: var(--shell);
+  margin-inline: auto;
+}
+
+.measure {
+  max-width: var(--measure);
+}
+
+/* Present to assistive tech, absent on screen. Used where footage carries the visible heading. */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.skip {
+  position: absolute;
+  left: var(--space-4);
+  top: -100px;
+  z-index: var(--z-skip);
+  padding: var(--space-3) var(--space-5);
+  background: var(--cta-fill);
+  color: var(--cta-text);
+  border-radius: var(--radius);
+  transition: top var(--dur-hover) var(--ease-out);
+}
+.skip:focus {
+  top: var(--space-4);
+}
+
+/* Technical label. Rationed: see the eyebrow budget in DESIGN.md. */
+.label {
+  font-family: var(--font-mono);
+  font-size: var(--step-small);
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* ---- Buttons ------------------------------------------------------------ */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
+  /* Never wraps: one line at every viewport. */
+  white-space: nowrap;
+  padding: var(--space-4) var(--space-6);
+  border: 1px solid transparent;
+  border-radius: var(--radius);
+  background: var(--cta-fill);
+  color: var(--cta-text);
+  font-family: var(--font-mono);
+  font-size: var(--step-small);
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition:
+    background var(--dur-hover) var(--ease-out),
+    transform var(--dur-press) var(--ease-out);
+}
+.btn:hover {
+  background: var(--cta-fill-hover);
+}
+.btn:active {
+  transform: translateY(1px);
+}
+.btn svg {
+  transition: transform var(--dur-hover) var(--ease-out);
+}
+.btn:hover svg {
+  transform: translateX(3px);
+}
+
+.btn--ghost {
+  background: transparent;
+  color: var(--text);
+  border-color: var(--line-strong);
+}
+.btn--ghost:hover {
+  background: transparent;
+  border-color: var(--red);
+  color: var(--red);
+}
+
+/* ---- Reveal ------------------------------------------------------------- */
+
+/*
+ * Reveal targets start hidden only when GSAP is going to move them. `.js-ready` is set by the
+ * app once the timelines are built, so a failed script never leaves content invisible.
+ */
+.js-ready .reveal {
+  opacity: 0;
+  transform: translateY(20px);
+  will-change: transform, opacity;
+}
+
+/* ---- Reduced motion ----------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  .js-ready .reveal {
+    opacity: 1;
+    transform: none;
+    will-change: auto;
+  }
+}

@@ -1,0 +1,23 @@
+node_modules
+dist
+dist-ssr
+
+# Build info from `tsc -b`
+*.tsbuildinfo
+
+# Local env
+.env
+.env.local
+.env.*.local
+
+# Editor / OS
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+Thumbs.db
+*.log
+
+# Scratch. Frame sequences under public/seq are committed on purpose: they are the site's
+# footage, not build output, and there is no pipeline that can regenerate them from source.
+.work

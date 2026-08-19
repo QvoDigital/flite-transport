@@ -1,0 +1,24 @@
+# The previous site was four pages; this one is a scroll journey plus a reference page. These keep
+# whatever ranking and inbound links those URLs have earned, and stop Google serving 404s for paths
+# it already has indexed. 301 because the move is permanent.
+#
+# Netlify syntax. On Vercel use vercel.json redirects, on Cloudflare Pages this same file works,
+# on Apache convert to RewriteRule with [R=301,L].
+
+/services      /#services      301
+/services/     /#services      301
+/about         /#about         301
+/about/        /#about         301
+/contact       /#contact       301
+/contact/      /#contact       301
+
+# /faq is a real second document, not a client-side route. This has to sit above the catch-all
+# below, which would otherwise rewrite it to the home page and lose the URL entirely.
+#
+# The canonical form is /faq/, because the build emits faq/index.html and every static host serves
+# a directory index at the trailing slash. The bare /faq is redirected to it rather than served at
+# both, so there is one URL rather than two competing for the same content.
+/faq           /faq/           301
+
+# Anything else resolves to the home document rather than a 404.
+/*             /index.html     200

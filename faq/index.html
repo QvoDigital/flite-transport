@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#111214" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#fcfcfc" media="(prefers-color-scheme: light)" />
+
+    <title>Delivery FAQ - Flite Transport, Burlington Ontario</title>
+    <meta
+      name="description"
+      content="Answers about Flite Transport's last mile delivery in Burlington, Ontario: the three service levels, GPS tracking, photo proof of delivery, white glove handling and what the last mile costs."
+    />
+    <link rel="canonical" href="https://flitetransport.com/faq/" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Flite Transport" />
+    <meta property="og:title" content="Delivery FAQ - Flite Transport" />
+    <meta
+      property="og:description"
+      content="Answers about last mile delivery with Flite Transport in Burlington, Ontario."
+    />
+    <meta property="og:url" content="https://flitetransport.com/faq/" />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <!--
+      The theme is resolved before first paint so the page never flashes the wrong mode. Duplicated
+      from index.html rather than imported: a module would run after paint and defeat the point.
+    -->
+    <script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('flite-theme');
+          var system = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+          document.documentElement.dataset.theme = stored || system;
+        } catch (e) {
+          document.documentElement.dataset.theme = 'dark';
+        }
+      })();
+    </script>
+
+    <!--
+      The FAQPage block lives here and only here.
+
+      Google requires FAQPage markup to correspond to content the visitor can actually see on the
+      URL that carries it, and issues manual actions when it does not. While the questions were a
+      section on the home page the markup belonged there; now that they are their own document it
+      has to move with them, or the home page is claiming an FAQ it no longer shows.
+
+      Generated at build time from `faqs` in src/content/site.ts, the same array this page renders
+      from, so the visible copy and the markup cannot drift apart.
+
+      Do not replace this marker with literal JSON. scripts/prerender.mjs looks for it and fails
+      the build if it is missing.
+    -->
+    <!--FAQ_SCHEMA-->
+
+    <!-- Tells search engines where this sits, and earns the breadcrumb trail in results. -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Flite Transport",
+            "item": "https://flitetransport.com/"
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "Delivery FAQ",
+            "item": "https://flitetransport.com/faq/"
+          }
+        ]
+      }
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/faq.tsx"></script>
+  </body>
+</html>

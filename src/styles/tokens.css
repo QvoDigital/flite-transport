@@ -1,0 +1,106 @@
+/**
+ * Design tokens.
+ *
+ * The inline script in index.html always resolves an explicit `data-theme` before first paint,
+ * so every token below is defined under one of the two theme selectors. Nothing relies on a
+ * media query at runtime, which keeps the manual toggle and the system preference in agreement.
+ *
+ * Accent lock: --red is the only accent on the page, in both themes.
+ */
+
+:root {
+  /* Brand. #990000 is lifted from the existing stylesheet, not chosen. */
+  --red: #990000;
+  --red-hot: #c01818;
+  --red-deep: #6b0000;
+
+  /* Space */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --space-8: 64px;
+  --space-9: 96px;
+  --space-10: 128px;
+  --space-11: 176px;
+
+  /* Shape lock: one radius for every surface on the page. */
+  --radius: 2px;
+
+  /* Shell */
+  --gutter: clamp(20px, 4vw, 64px);
+  --shell: min(1360px, 100% - 2 * var(--gutter));
+  --measure: 65ch;
+
+  /* Rhythm */
+  --section-pad: clamp(96px, 12vw, 176px);
+
+  /* Type */
+  --font-display: 'Montserrat Variable', system-ui, sans-serif;
+  --font-body: 'Raleway Variable', system-ui, sans-serif;
+  --font-mono: 'Roboto Mono Variable', ui-monospace, monospace;
+
+  /* Capped so the longest headline holds to two lines at desktop rather than three. */
+  --step-display: clamp(2.5rem, 1.5rem + 3.6vw, 4.75rem);
+  --step-h2: clamp(2rem, 1.2rem + 3.2vw, 4rem);
+  --step-h3: clamp(1.25rem, 1.05rem + 0.8vw, 1.625rem);
+  --step-body: clamp(1rem, 0.96rem + 0.2vw, 1.125rem);
+  --step-small: 0.8125rem;
+
+  /* Motion */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --dur-hover: 180ms;
+  --dur-press: 70ms;
+
+  /* Layers. Documented scale, no ad-hoc z-index anywhere else. */
+  --z-route: 1;
+  --z-content: 2;
+  --z-masthead: 40;
+  --z-skip: 60;
+}
+
+:root[data-theme='dark'] {
+  --surface: #111214;
+  --surface-2: #191b1e;
+  --surface-3: #212428;
+  --text: #ededec;
+  --text-body: #d6d4d1;
+  --muted: #96938f;
+  --line: #2c2f33;
+  --line-strong: #3d4147;
+
+  /* The route reads as emitted light on dark, so it can sit at full brand red. */
+  --route: var(--red);
+  --route-dim: #3a1417;
+
+  --cta-fill: var(--red);
+  --cta-text: #ffffff;
+  --cta-fill-hover: var(--red-hot);
+
+  --scrim: rgb(17 18 20 / 0.72);
+  color-scheme: dark;
+}
+
+:root[data-theme='light'] {
+  --surface: #fcfcfc;
+  --surface-2: #f1efec;
+  --surface-3: #e6e3df;
+  --text: #1a1a1a;
+  --text-body: #333333;
+  --muted: #6b6864;
+  --line: #ddd9d4;
+  --line-strong: #bfbab3;
+
+  --route: var(--red);
+  --route-dim: #e8d9d9;
+
+  --cta-fill: var(--red);
+  --cta-text: #ffffff;
+  --cta-fill-hover: var(--red-deep);
+
+  --scrim: rgb(252 252 252 / 0.78);
+  color-scheme: light;
+}

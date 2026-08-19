@@ -1,0 +1,1137 @@
+/* =========================================================================
+   Page shell and the route
+   ========================================================================= */
+
+.page {
+  position: relative;
+  isolation: isolate;
+  overflow-x: clip;
+}
+
+.route {
+  position: absolute;
+  inset: 0;
+  z-index: var(--z-route);
+  pointer-events: none;
+}
+
+.route__svg {
+  display: block;
+}
+
+.route__track {
+  stroke: var(--route-dim);
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
+.route__line {
+  stroke: var(--route);
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
+.route__parcel {
+  fill: var(--route);
+}
+
+/* Content sits above the route everywhere. */
+.masthead,
+main,
+.footer {
+  position: relative;
+  z-index: var(--z-content);
+}
+
+/* Waypoints are measurement anchors only. */
+[data-waypoint] {
+  display: block;
+  width: 1px;
+  height: 1px;
+  pointer-events: none;
+}
+
+/* =========================================================================
+   Masthead
+   ========================================================================= */
+
+.masthead {
+  position: sticky;
+  top: 0;
+  z-index: var(--z-masthead);
+  background: var(--scrim);
+  backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--line);
+}
+
+.masthead__inner {
+  display: flex;
+  align-items: center;
+  gap: var(--space-6);
+  /* Cap from DESIGN.md: the bar never eats more than 72px of the viewport. */
+  height: 72px;
+}
+
+.masthead__brand {
+  flex: none;
+}
+
+.wordmark {
+  display: block;
+}
+
+.wordmark__img {
+  height: 26px;
+  width: auto;
+}
+
+:root[data-theme='dark'] .wordmark__img--on-light,
+:root[data-theme='light'] .wordmark__img--on-dark {
+  display: none;
+}
+
+.wordmark--footer .wordmark__img {
+  height: 30px;
+}
+
+.masthead__nav {
+  display: flex;
+  align-items: center;
+  gap: var(--space-6);
+  margin-inline-start: auto;
+  font-size: 0.9375rem;
+}
+
+.masthead__nav a {
+  position: relative;
+  color: var(--text-body);
+  padding-block: var(--space-2);
+  transition: color var(--dur-hover) var(--ease-out);
+}
+
+.masthead__nav a::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 2px;
+  background: var(--red);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--dur-hover) var(--ease-out);
+}
+
+.masthead__nav a:hover {
+  color: var(--text);
+}
+.masthead__nav a:hover::after {
+  transform: scaleX(1);
+}
+
+.masthead__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex: none;
+}
+
+.masthead__icon {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: transparent;
+  color: var(--text-body);
+  cursor: pointer;
+  transition:
+    border-color var(--dur-hover) var(--ease-out),
+    color var(--dur-hover) var(--ease-out);
+}
+.masthead__icon:hover {
+  border-color: var(--line-strong);
+  color: var(--text);
+}
+
+.masthead__cta {
+  padding: var(--space-3) var(--space-5);
+}
+
+.masthead__burger {
+  display: none;
+}
+
+.masthead__mobile {
+  display: none;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding: var(--space-5) var(--gutter) var(--space-7);
+  border-bottom: 1px solid var(--line);
+  background: var(--surface);
+}
+.masthead__mobile a:not(.btn) {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.5rem;
+  color: var(--text);
+}
+.masthead__mobile .btn {
+  align-self: flex-start;
+}
+
+@media (max-width: 900px) {
+  .masthead__nav,
+  .masthead__cta {
+    display: none;
+  }
+  .masthead__burger {
+    display: grid;
+  }
+  .masthead__actions {
+    margin-inline-start: auto;
+  }
+  .masthead__mobile[data-open='true'] {
+    display: flex;
+  }
+}
+
+/* =========================================================================
+   Opening shot: scroll-scrubbed sequence
+   ========================================================================= */
+
+.opening {
+  position: relative;
+}
+
+.seq {
+  position: relative;
+  height: 100dvh;
+  overflow: hidden;
+  background: #0d0c0b;
+}
+
+.seq__canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/*
+ * The footage runs from a dim exterior to a brightly lit cargo bay full of pale cardboard, so a
+ * single flat tint cannot hold contrast across the whole shot. Two layers do it: a wide graded
+ * wash weighted to the copy side, plus a soft vertical falloff that keeps the masthead legible.
+ * Measured against the brightest frame, not the first one.
+ */
+.seq__overlay {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  align-items: center;
+  background:
+    linear-gradient(180deg, rgb(8 7 6 / 0.55) 0%, rgb(8 7 6 / 0) 22%),
+    linear-gradient(
+      100deg,
+      rgb(8 7 6 / 0.92) 0%,
+      rgb(8 7 6 / 0.88) 30%,
+      rgb(8 7 6 / 0.62) 52%,
+      rgb(8 7 6 / 0.3) 74%,
+      rgb(8 7 6 / 0.18) 100%
+    );
+}
+
+.opening__beats {
+  position: relative;
+  display: grid;
+}
+
+/* All beats occupy the same cell, so they cross-fade in place instead of shifting the layout. */
+.beat {
+  grid-area: 1 / 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-5);
+  /*
+   * Sized in rem, not ch. A `ch` cap here resolves against the body font and would squeeze the
+   * display headline into three lines while looking correct in the stylesheet.
+   */
+  max-width: min(46rem, 100%);
+  opacity: 0;
+  visibility: hidden;
+  will-change: transform, opacity;
+}
+
+/* Copy over footage is always light on scrim, in both themes. */
+.beat h1,
+.beat__heading {
+  color: #ffffff;
+  text-shadow: 0 2px 30px rgb(0 0 0 / 0.45);
+}
+
+.beat__heading {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: var(--step-h2);
+  line-height: 1.04;
+  letter-spacing: -0.022em;
+}
+
+.beat__sub {
+  font-size: clamp(1.0625rem, 1rem + 0.4vw, 1.25rem);
+  color: #e4e1dd;
+  max-width: 38ch;
+}
+
+.beat__levels {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.beat__levels li {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding-left: var(--space-5);
+  border-left: 2px solid var(--red);
+}
+
+.beat__level {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(1.375rem, 1.1rem + 1.1vw, 1.875rem);
+  color: #ffffff;
+  letter-spacing: -0.015em;
+}
+
+.beat__note {
+  color: #c9c5c0;
+  font-size: 0.9375rem;
+}
+
+/* Capability items are a list of many, not three headline levels, so they sit a step down. */
+.beat__level--sm {
+  font-size: clamp(1.0625rem, 0.98rem + 0.42vw, 1.3125rem);
+  font-weight: 600;
+}
+
+/* ---- The feature shot --------------------------------------------------- */
+
+/*
+ * The operation sequence is the page's closing argument and is treated a step larger than the
+ * other two: wider copy measure, bigger display type, and a lighter scrim because the warehouse
+ * interior is already dim and the reveal is the thing worth seeing.
+ */
+.seq--feature .seq__overlay {
+  background:
+    linear-gradient(180deg, rgb(8 7 6 / 0.5) 0%, rgb(8 7 6 / 0) 20%),
+    linear-gradient(
+      100deg,
+      rgb(8 7 6 / 0.88) 0%,
+      rgb(8 7 6 / 0.78) 34%,
+      rgb(8 7 6 / 0.42) 60%,
+      rgb(8 7 6 / 0.16) 100%
+    );
+}
+
+.seq--feature .beat {
+  max-width: min(54rem, 100%);
+  gap: var(--space-6);
+}
+
+.beat__heading--feature {
+  font-size: clamp(2.25rem, 1.4rem + 3.4vw, 4.25rem);
+}
+
+/* The two closing lines are the argument, not supporting text, so they carry display weight. */
+.beat__statement {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(1.375rem, 1.05rem + 1.5vw, 2.125rem);
+  line-height: 1.24;
+  letter-spacing: -0.015em;
+  color: #ffffff;
+  text-shadow: 0 2px 30px rgb(0 0 0 / 0.45);
+  max-width: 30ch;
+}
+
+/* ---- Preload state ------------------------------------------------------ */
+
+.seq__loading {
+  position: absolute;
+  left: 50%;
+  bottom: var(--space-8);
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+  color: #cfcbc6;
+}
+
+.seq__bar {
+  display: block;
+  width: 140px;
+  height: 2px;
+  background: rgb(255 255 255 / 0.18);
+  overflow: hidden;
+}
+
+.seq__barFill {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: var(--red);
+  transform-origin: left;
+  transform: scaleX(0);
+}
+
+/* ---- Reduced motion ----------------------------------------------------- */
+
+/*
+ * With the scrub disabled the beats never receive an opacity, so the overlay is dropped entirely
+ * and the same copy is rendered as an ordinary stack beneath the resting frame.
+ */
+.opening__static {
+  display: none;
+  padding-block: var(--space-9);
+  background: var(--surface);
+}
+
+.opening__static .shell {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-5);
+}
+
+.opening__static h1 {
+  color: var(--text);
+}
+
+.opening__static .beat__sub {
+  color: var(--text-body);
+}
+
+.opening__static .beat__level {
+  color: var(--text);
+}
+
+.opening__static .beat__note {
+  color: var(--muted);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .seq__overlay {
+    display: none;
+  }
+  .seq {
+    height: 62vh;
+  }
+  .opening__static {
+    display: block;
+  }
+}
+
+/* ---- Sequences on narrow screens ---------------------------------------- */
+
+/*
+ * The footage is 16:9 and a phone is roughly 9:19. Cover-fitting it to a full-height viewport
+ * would crop away everything either side of the centre line, which on the opening shot means
+ * losing the van doors entirely, and on the capability shot means losing the scanner.
+ *
+ * So on narrow screens the shot becomes a band at its own aspect ratio and the copy sits beneath
+ * it rather than over it. The scrub is unchanged; only the composition is.
+ */
+@media (max-width: 760px) {
+  .seq {
+    height: 100dvh;
+    display: grid;
+    grid-template-rows: auto 1fr;
+    align-content: start;
+  }
+
+  .seq__canvas {
+    position: static;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 16 / 9;
+  }
+
+  .seq__overlay {
+    position: static;
+    align-items: start;
+    padding-block: var(--space-6) var(--space-7);
+    /* No longer sitting on the picture, so the graded scrim would be pointless weight. */
+    background: linear-gradient(180deg, rgb(8 7 6 / 0.9), rgb(8 7 6 / 1) 40%);
+  }
+
+  .beat {
+    gap: var(--space-4);
+  }
+
+  .beat h1 {
+    font-size: clamp(2rem, 1.2rem + 4.4vw, 2.75rem);
+  }
+
+  .beat__heading {
+    font-size: clamp(1.625rem, 1.1rem + 3.2vw, 2.25rem);
+  }
+
+  .beat__sub {
+    font-size: 1rem;
+  }
+
+  .beat__levels {
+    gap: var(--space-3);
+  }
+
+  .beat__level {
+    font-size: 1.25rem;
+  }
+
+  .beat__level--sm {
+    font-size: 1rem;
+  }
+
+  .seq__loading {
+    bottom: var(--space-6);
+  }
+}
+
+/* =========================================================================
+   Thread wrapper for the route
+   ========================================================================= */
+
+.thread {
+  position: relative;
+}
+
+/* =========================================================================
+   The cost figure
+   ========================================================================= */
+
+.figure {
+  padding-block: var(--section-pad);
+  background: var(--surface-2);
+  border-block: 1px solid var(--line);
+}
+
+.figure__inner {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-6);
+  align-items: center;
+}
+
+@media (min-width: 900px) {
+  .figure__inner {
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: var(--space-9);
+  }
+}
+
+.figure__value {
+  display: flex;
+  align-items: flex-start;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: clamp(6rem, 3rem + 18vw, 16rem);
+  line-height: 0.82;
+  letter-spacing: -0.045em;
+  color: var(--red);
+  /* Tabular figures stop the number jittering as it counts. */
+  font-variant-numeric: tabular-nums;
+}
+
+.figure__unit {
+  font-size: 0.42em;
+  line-height: 1;
+  margin-top: 0.12em;
+}
+
+.figure__claim {
+  font-size: var(--step-h2);
+  max-width: 18ch;
+}
+
+/* The value is aria-hidden, so the heading carries the number for assistive tech. */
+.figure__sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.figure__body {
+  margin-top: var(--space-5);
+  color: var(--text-body);
+}
+
+.figure__pin {
+  position: absolute;
+  right: -999px;
+  top: 50%;
+}
+
+/* =========================================================================
+   Capabilities
+   ========================================================================= */
+
+.caps {
+  padding-block: var(--section-pad);
+}
+
+.caps__inner {
+  position: relative;
+}
+
+.caps__heading {
+  max-width: 16ch;
+  margin-bottom: var(--space-8);
+}
+
+.caps__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-7);
+}
+
+@media (min-width: 760px) {
+  .caps__grid {
+    /* Deliberately uneven: the handling cluster carries one more item than the others. */
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr) minmax(0, 1fr);
+    gap: var(--space-6);
+  }
+}
+
+.cluster__name {
+  padding-bottom: var(--space-3);
+  border-bottom: 1px solid var(--red);
+  margin-bottom: var(--space-5);
+}
+
+.cluster__list {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  color: var(--text-body);
+}
+
+.caps__media {
+  margin-top: var(--space-9);
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: var(--surface-2);
+}
+
+.caps__media img {
+  width: 100%;
+  aspect-ratio: 21 / 9;
+  object-fit: cover;
+}
+
+.caps__pin {
+  position: absolute;
+  left: -999px;
+  top: 40%;
+}
+
+/* =========================================================================
+   About
+   ========================================================================= */
+
+.about {
+  padding-block: var(--section-pad);
+  background: var(--surface-2);
+  border-block: 1px solid var(--line);
+}
+
+.about__inner {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-7);
+}
+
+@media (min-width: 900px) {
+  .about__inner {
+    grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+    gap: var(--space-9);
+  }
+}
+
+.about__heading {
+  max-width: 12ch;
+}
+
+.about__body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  max-width: var(--measure);
+  color: var(--text-body);
+}
+
+.about__lead {
+  font-size: clamp(1.1875rem, 1.05rem + 0.7vw, 1.625rem);
+  line-height: 1.45;
+  color: var(--text);
+}
+
+.about__closing {
+  padding-top: var(--space-5);
+  border-top: 1px solid var(--line-strong);
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--step-h3);
+  color: var(--text);
+}
+
+.about__pin {
+  position: absolute;
+  right: -999px;
+  top: 30%;
+}
+
+/* =========================================================================
+   FAQ
+
+   The page's quiet moment, sitting between the About text and the contact form. No cards, no
+   accordion, no icons: a hairline per row is the entire chrome. It reads as a well-set reference
+   page rather than as a search-engine block, which is the only way a section like this earns its
+   place next to the footage.
+   ========================================================================= */
+
+/*
+ * The FAQ is its own document now, so this carries a page header rather than a section heading.
+ * It is the one conventional page on the site and it should read as one: no footage, no scrub,
+ * generous measure, hairlines instead of boxes. Same tokens as everywhere else, so it is
+ * recognisably the same product, just a quieter room in it.
+ */
+/* No bottom border: the first row of the list already draws one, and two hairlines a gap apart
+   reads as a rendering fault rather than a divider. */
+.faqpage__head {
+  padding-block: var(--space-9) var(--space-7);
+}
+
+.faqpage__crumb {
+  font-family: var(--font-mono);
+  font-size: var(--step-small);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: var(--space-5);
+}
+
+.faqpage__crumb a:hover {
+  color: var(--red);
+}
+
+.faqpage__head h1 {
+  max-width: 16ch;
+}
+
+.faqpage__lead {
+  margin-top: var(--space-5);
+  max-width: 58ch;
+  color: var(--text-body);
+}
+
+.faqpage__lead a {
+  color: var(--red);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.faqpage__cta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-4);
+  padding-block: var(--space-8) var(--space-10);
+}
+
+.faqpage__ctaBody {
+  max-width: 52ch;
+  color: var(--text-body);
+  margin-bottom: var(--space-2);
+}
+
+.faq {
+  padding-block: 0 var(--space-8);
+}
+
+.faq__heading {
+  max-width: 14ch;
+  margin-bottom: var(--space-8);
+}
+
+.faq__item {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-3);
+  padding-block: var(--space-6);
+  /* Top border only. A border on both edges of every row doubles every hairline. */
+  border-top: 1px solid var(--line);
+}
+
+/* The last row closes the list, otherwise it bleeds into the section padding. */
+.faq__list > .faq__item:last-child {
+  border-bottom: 1px solid var(--line);
+}
+
+@media (min-width: 860px) {
+  .faq__item {
+    /* Question left, answer right: the classic reference-page setting, and distinct from every
+       other layout family on the page. */
+    grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+    gap: var(--space-8);
+    align-items: start;
+  }
+}
+
+.faq__q {
+  font-size: clamp(1.0625rem, 1rem + 0.42vw, 1.3125rem);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+}
+
+.faq__a {
+  color: var(--text-body);
+  max-width: 62ch;
+}
+
+/* =========================================================================
+   Contact
+   ========================================================================= */
+
+.contact {
+  padding-block: var(--section-pad);
+}
+
+.contact__inner {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-8);
+}
+
+@media (min-width: 900px) {
+  .contact__inner {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: var(--space-9);
+  }
+}
+
+.contact__detail {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.contact__list {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.contact__list li {
+  display: flex;
+  gap: var(--space-4);
+  align-items: flex-start;
+  color: var(--text-body);
+}
+
+.contact__list svg {
+  color: var(--red);
+  flex: none;
+  margin-top: 0.3em;
+}
+
+.contact__list a:hover {
+  color: var(--red);
+}
+
+/* ---- Form --------------------------------------------------------------- */
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  padding: var(--space-7);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface-2);
+  align-self: start;
+}
+
+.form__honey {
+  position: absolute;
+  left: -9999px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.field label {
+  font-family: var(--font-mono);
+  font-size: var(--step-small);
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-body);
+}
+
+.field input,
+.field textarea {
+  padding: var(--space-4);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--text);
+  transition: border-color var(--dur-hover) var(--ease-out);
+}
+
+.field input:hover,
+.field textarea:hover {
+  border-color: var(--muted);
+}
+
+.field textarea {
+  resize: vertical;
+  min-height: 120px;
+}
+
+.field [aria-invalid='true'] {
+  border-color: var(--red-hot);
+}
+
+.field__error {
+  font-size: 0.875rem;
+  color: var(--red-hot);
+}
+
+:root[data-theme='dark'] .field__error {
+  /* The mid red does not clear AA on the dark surface, so it lifts in dark mode only. */
+  color: #ff8a80;
+}
+
+.form .btn {
+  align-self: flex-start;
+}
+
+.form .btn:disabled {
+  opacity: 0.65;
+  cursor: progress;
+}
+
+.form__status {
+  font-size: 0.9375rem;
+  color: var(--text-body);
+}
+
+/* =========================================================================
+   Footer
+   ========================================================================= */
+
+.footer {
+  border-top: 1px solid var(--line);
+  background: var(--surface-2);
+}
+
+.footer__inner {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-7);
+  padding-block: var(--space-9) var(--space-8);
+}
+
+@media (min-width: 760px) {
+  .footer__inner {
+    grid-template-columns: minmax(0, 2fr) minmax(0, 1fr) minmax(0, 1fr);
+    gap: var(--space-8);
+  }
+}
+
+.footer__brand {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  align-items: flex-start;
+}
+
+.footer__blurb {
+  max-width: 46ch;
+  color: var(--text-body);
+  font-size: 0.9375rem;
+}
+
+.footer__social {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-5);
+  font-size: 0.9375rem;
+}
+
+.footer__social a:hover,
+.footer__nav a:hover,
+.footer__contact a:hover {
+  color: var(--red);
+}
+
+.footer__title {
+  font-family: var(--font-mono);
+  font-size: var(--step-small);
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: var(--space-4);
+}
+
+.footer__nav ul {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  font-size: 0.9375rem;
+}
+
+.footer__contact address {
+  font-style: normal;
+  font-size: 0.9375rem;
+  line-height: 1.9;
+  color: var(--text-body);
+}
+
+.footer__base {
+  border-top: 1px solid var(--line);
+  padding-block: var(--space-5);
+  font-size: 0.875rem;
+  color: var(--muted);
+}
+
+/* =========================================================================
+   Prerendered fallback
+   ========================================================================= */
+
+/*
+ * The static copy written into #root at build time, for crawlers that do not run JavaScript and
+ * for anyone whose bundle failed. React clears the container when it mounts, so this is normally
+ * on screen for a moment at most. Styled anyway: it must read as a deliberate plain version of
+ * the page, never as unstyled markup, and never as hidden text.
+ */
+.prerender {
+  padding-block: var(--space-9);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.prerender h2 {
+  margin-top: var(--space-6);
+}
+
+.prerender p,
+.prerender li,
+.prerender address {
+  max-width: var(--measure);
+  color: var(--text-body);
+  font-style: normal;
+}
+
+.prerender ul {
+  padding-left: var(--space-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.prerender a {
+  color: var(--red);
+  text-decoration: underline;
+}
+
+/* =========================================================================
+   Narrow screens
+   ========================================================================= */
+
+@media (max-width: 760px) {
+  :root {
+    /* The desktop rhythm reads as dead space once the columns have collapsed. */
+    --section-pad: clamp(64px, 14vw, 96px);
+  }
+
+  /* Single column everywhere: the asymmetry is a desktop device. */
+  .figure__inner,
+  .about__inner,
+  .contact__inner,
+  .footer__inner {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .figure__value {
+    font-size: clamp(5rem, 3rem + 22vw, 9rem);
+  }
+
+  .figure__claim,
+  .about__heading,
+  .caps__heading {
+    max-width: none;
+  }
+
+  .form {
+    padding: var(--space-5);
+  }
+
+  /* Touch targets: 44px minimum on anything tappable. */
+  .field input,
+  .field textarea {
+    min-height: 46px;
+    /* 16px stops iOS Safari zooming the viewport when a field takes focus. */
+    font-size: 16px;
+  }
+
+  .btn {
+    min-height: 46px;
+    padding-inline: var(--space-5);
+  }
+
+  .masthead__icon {
+    width: 44px;
+    height: 44px;
+  }
+
+  .contact__list li,
+  .footer__social a,
+  .footer__nav a {
+    padding-block: var(--space-1);
+  }
+
+  .caps__static {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-6);
+  }
+}
