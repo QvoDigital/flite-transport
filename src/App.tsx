@@ -2,6 +2,7 @@ import { useEffect, useMemo } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
+import { CookieBanner } from './components/CookieBanner';
 import { Footer } from './components/Footer';
 import { Masthead } from './components/Masthead';
 import { About } from './sections/About';
@@ -57,6 +58,8 @@ export default function App() {
       <a className="skip" href="#main">
         Skip to content
       </a>
+
+      <CookieBanner />
 
       <Masthead />
 

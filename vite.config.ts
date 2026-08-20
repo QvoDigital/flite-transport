@@ -3,17 +3,22 @@ import react from '@vitejs/plugin-react';
 import { defineConfig } from 'vite';
 
 /**
- * Two entry points, not a router.
+ * Six documents, not a router.
  *
- * The FAQ is a separate document rather than a client-side route on purpose. It is there to be
- * indexed and quoted, so it needs its own URL, its own canonical, its own title and its own
- * structured data. A client-side route would give it none of those without a router and a
- * server-side rendering step, and `react-router-dom` cannot be installed on this machine anyway
- * because npm is missing from the Node install.
+ * The FAQ and the four legal pages are separate documents rather than client-side routes on
+ * purpose. Each is there to be indexed, linked and quoted, so each needs its own URL, its own
+ * canonical, its own title and its own structured data. A client-side route would give them none
+ * of those without adding a router and a server-side rendering step.
  *
- * The practical benefit is that /faq never loads GSAP or a single frame of footage. It is a
- * reference page and it should weigh what a reference page weighs.
+ * The practical benefit is that none of them load GSAP or a single frame of footage. They are
+ * reference pages and they should weigh what a reference page weighs.
+ *
+ * The four legal documents share one entry module, src/legal.tsx, which picks the document from
+ * `data-legal` on the body. Four entry files would have produced four near-identical bundles;
+ * this way the shared code is emitted once and a visitor reading a second policy already has it.
  */
+const page = (file: string) => fileURLToPath(new URL(file, import.meta.url));
+
 export default defineConfig({
   plugins: [react()],
   build: {
@@ -21,8 +26,12 @@ export default defineConfig({
     cssTarget: 'chrome111',
     rollupOptions: {
       input: {
-        main: fileURLToPath(new URL('index.html', import.meta.url)),
-        faq: fileURLToPath(new URL('faq/index.html', import.meta.url)),
+        main: page('index.html'),
+        faq: page('faq/index.html'),
+        privacy: page('privacy/index.html'),
+        cookies: page('cookies/index.html'),
+        terms: page('terms/index.html'),
+        accessibility: page('accessibility/index.html'),
       },
     },
   },

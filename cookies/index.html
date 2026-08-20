@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#111214" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#fcfcfc" media="(prefers-color-scheme: light)" />
+
+    <title>Cookie Policy - Flite Transport, Burlington Ontario</title>
+    <meta name="description" content="Exactly what flitetransport.com stores in your browser: one cookie recording your cookie choice, and one local storage entry remembering light or dark mode. No analytics, no advertising cookies." />
+    <link rel="canonical" href="https://flitetransport.com/cookies/" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Flite Transport" />
+    <meta property="og:title" content="Cookie Policy - Flite Transport" />
+    <meta property="og:description" content="Exactly what flitetransport.com stores in your browser: one cookie recording your cookie choice, and one local storage entry remembering light or dark mode. No analytics, no advertising cookies." />
+    <meta property="og:url" content="https://flitetransport.com/cookies/" />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <!--
+      Theme resolved before first paint so the page never flashes the wrong mode. Duplicated from
+      index.html rather than imported: a module would run after paint and defeat the point.
+    -->
+    <script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('flite-theme');
+          var system = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+          document.documentElement.dataset.theme = stored || system;
+        } catch (e) {
+          document.documentElement.dataset.theme = 'dark';
+        }
+      })();
+    </script>
+
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Flite Transport",
+            "item": "https://flitetransport.com/"
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "Cookie Policy",
+            "item": "https://flitetransport.com/cookies/"
+          }
+        ]
+      }
+    </script>
+  </head>
+  <!--
+    'data-legal' is how src/legal.tsx knows which of the four documents to render. All four pages
+    share that one entry module. The value must match a key of legalDocs in
+    src/content/legal.ts; scripts/prerender.mjs fails the build if it does not.
+  -->
+  <body data-legal="cookies">
+    <div id="root"></div>
+    <script type="module" src="/src/legal.tsx"></script>
+  </body>
+</html>

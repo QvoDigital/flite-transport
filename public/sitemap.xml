@@ -1,10 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  Two real documents, two entries. Anchors are not listed: Google indexes documents, not fragments,
+  Six real documents, six entries. Anchors are not listed: Google indexes documents, not fragments,
   and padding a sitemap with #hash URLs is a known way to look like you are gaming it.
 
   /faq is the page most likely to earn rankings on its own, because it answers question-shaped
   queries that the home page cannot target without turning into a wall of text.
+
+  The four legal documents are listed rather than hidden. They are low priority and nobody searches
+  for them, but a company whose policies are crawlable and dated is a company that looks like it
+  keeps them, and that is a trust signal both to buyers and to search engines.
 -->
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
@@ -16,5 +20,25 @@
     <loc>https://flitetransport.com/faq/</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://flitetransport.com/privacy/</loc>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://flitetransport.com/cookies/</loc>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://flitetransport.com/terms/</loc>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://flitetransport.com/accessibility/</loc>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
   </url>
 </urlset>

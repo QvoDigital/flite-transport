@@ -56,15 +56,42 @@ buyers search for, and their absence is the main ceiling on how well this can ra
 - `scripts/prerender.mjs` runs after `vite build` and writes a readable version of the page into
   `#root`. Without it a crawler receives an empty div: Google renders JavaScript eventually, most
   answer-engine crawlers never do. It also emits `dist/llms.txt`.
-- `/faq` is a **separate document**, not a client-side route, with its own entry in
-  `vite.config.ts`. It carries the `FAQPage` and `BreadcrumbList` structured data and loads no GSAP
-  and no footage.
+- `/faq` and the four legal pages are **separate documents**, not client-side routes, each with its
+  own entry in `vite.config.ts`. `/faq` carries the `FAQPage` and `BreadcrumbList` structured data;
+  the legal pages carry `BreadcrumbList`. None of them load GSAP or any footage.
 - `index.html` carries `LocalBusiness` markup. `openingHoursSpecification`, `areaServed` and `geo`
   are deliberately absent until the client supplies them.
 - `public/_redirects` 301s the old `/services`, `/about` and `/contact` URLs so their ranking is not
-  thrown away. Netlify syntax; convert for other hosts.
+  thrown away. **Netlify syntax, which Vercel ignores** — the site deploys to Vercel, so the live
+  copy of those rules is `vercel.json`. Change both together.
 - `public/robots.txt` allows the AI crawlers on purpose, with the reasoning inline. Flip to
   `Disallow` if the client prefers.
+
+## Legal pages and cookie consent
+
+Four documents at `/privacy/`, `/cookies/`, `/terms/` and `/accessibility/`, all rendered by
+`src/pages/LegalPage.tsx` from copy in `src/content/legal.ts`, and all served by one shared entry
+(`src/legal.tsx`) that picks the document from `data-legal` on the body.
+
+Two rules keep them honest:
+
+- **`src/content/legal.ts` is the source for the head metadata as well as the body.**
+  `scripts/prerender.mjs` fails the build if a committed HTML file's `<title>`, canonical or
+  `data-legal` disagrees with it. A wrong `<title>` in search results is the kind of error nobody
+  notices for months.
+- **Every claim in those documents about what this website does was checked against this
+  repository**, and claims that could not be were left out. The header of `legal.ts` lists what a
+  lawyer and the client still need to confirm before publication. Read it before shipping changes.
+
+The consent bar is `src/components/CookieBanner.tsx` over `src/lib/consent.ts`. It is shown once,
+the answer is kept in a `flite_consent` cookie for six months, and the footer's **Cookie
+preferences** control brings it back.
+
+**Nothing on the site currently needs consent**, so `whenGranted()` has no callers yet. That is the
+point of building it first: anything non-essential added later has to opt in through that function,
+so the default is off and a forgotten wiring fails closed. Adding anything to the cookie table means
+bumping `VERSION` in `consent.ts`, which re-asks everyone — consent to today's table is not consent
+to a table with analytics in it.
 
 ## Contact form
 
@@ -84,6 +111,8 @@ service when there is somewhere real to send it.
 
 ## Known gaps
 
-- Reduced motion and light mode were exercised in code but never viewed on a device.
-- Mobile layout is written but unverified at true phone width.
-- `_redirects` cannot be tested locally; `vite preview` ignores it. Check after the first deploy.
+- Reduced motion was exercised in code but never viewed on a device.
+- `_redirects` and `vercel.json` cannot be tested locally; `vite preview` ignores both. Check the
+  old `/services`, `/about` and `/contact` URLs after a deploy.
+- The legal copy has not been reviewed by a lawyer, and the items listed at the top of
+  `src/content/legal.ts` are still unconfirmed by the client.

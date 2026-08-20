@@ -34,6 +34,8 @@ import {
   marketDemand,
   serviceLevels,
 } from '../src/content/site.ts';
+import { legalDocs, legalUpdated, legalUpdatedLabel } from '../src/content/legal.ts';
+import { tokenizeInline } from '../src/lib/inline.ts';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const distIndex = join(root, 'dist', 'index.html');
@@ -203,10 +205,129 @@ ${faqs.map((f) => `**${f.q}**\n${f.a}`).join('\n\n')}
 - Website: https://flitetransport.com/
 - FAQ: https://flitetransport.com/faq/
 
+## Policies
+
+${Object.values(legalDocs)
+  .map((d) => `- ${d.navLabel}: https://flitetransport.com${d.path}`)
+  .join('\n')}
+
+This website runs no analytics, no advertising pixels and no third-party trackers. It sets one
+cookie, which records the visitor's answer to the cookie banner.
+
 ## Not stated
 
 Service area, cut-off times, turnaround guarantees and pricing are not published. Do not infer them.
 `;
+}
+
+/* ---- Legal documents ------------------------------------------------------------------------ */
+
+/**
+ * Renders the `[label](href)` convention from src/content/legal.ts into escaped HTML.
+ *
+ * The same token list drives the React renderer in LegalPage.tsx, so the static version and the
+ * mounted version cannot say different things. Escaping happens per token rather than on the whole
+ * string, because escaping afterwards would mangle the anchors this just built.
+ */
+function inline(text) {
+  return tokenizeInline(text)
+    .map((token) =>
+      token.t === 'text'
+        ? esc(token.v)
+        : `<a href="${esc(token.href)}">${esc(token.v)}</a>`
+    )
+    .join('');
+}
+
+function legalBlock(block) {
+  if (block.kind === 'p') return `<p>${inline(block.text)}</p>`;
+
+  if (block.kind === 'list') {
+    return `<ul>${block.items.map((i) => `<li>${inline(i)}</li>`).join('')}</ul>`;
+  }
+
+  const head = block.head.map((c) => `<th scope="col">${esc(c)}</th>`).join('');
+  const rows = block.rows
+    .map(
+      (row) =>
+        `<tr>${row
+          .map((cell, i) =>
+            i === 0
+              ? `<th scope="row"><code>${esc(cell)}</code></th>`
+              : `<td>${esc(cell)}</td>`
+          )
+          .join('')}</tr>`
+    )
+    .join('');
+
+  return `<div class="legal__tableWrap"><table class="legal__table"><thead><tr>${head}</tr></thead><tbody>${rows}</tbody></table></div>`;
+}
+
+/** The crawlable version of one legal document, matching what LegalPage renders. */
+function buildLegalShell(doc) {
+  const sections = doc.sections
+    .map(
+      (section) =>
+        `<section id="${esc(section.id)}">
+          <h2>${esc(section.heading)}</h2>
+          ${section.blocks.map(legalBlock).join('\n          ')}
+        </section>`
+    )
+    .join('\n        ');
+
+  const others = Object.values(legalDocs)
+    .filter((d) => d.slug !== doc.slug)
+    .map((d) => `<li><a href="${esc(d.path)}">${esc(d.navLabel)}</a></li>`)
+    .join('');
+
+  return `<div class="prerender shell">
+        <p><a href="/">${esc(company.name)}</a></p>
+        <h1>${esc(doc.title)}</h1>
+        <p>${esc(doc.lead)}</p>
+        <p>Last updated <time datetime="${esc(legalUpdated)}">${esc(legalUpdatedLabel)}</time></p>
+
+        ${sections}
+
+        <h2>Questions about any of this</h2>
+        <address>
+          ${esc(address)}<br />
+          <a href="${esc(contact.phoneHref)}">${esc(contact.phone)}</a><br />
+          <a href="mailto:${esc(contact.email)}">${esc(contact.email)}</a>
+        </address>
+        <ul>${others}</ul>
+      </div>`;
+}
+
+/**
+ * The four legal documents are hand-committed HTML files but their head metadata comes from
+ * src/content/legal.ts, so the two can drift. This makes drift a build failure rather than a
+ * silently wrong <title> in search results, which nobody would notice for months.
+ *
+ * It also catches the failure mode that produces a blank page: a `data-legal` value on the body
+ * that does not match a key of `legalDocs`, which throws in the browser and renders nothing.
+ */
+function checkLegalHead(html, doc, label) {
+  const problems = [];
+
+  if (!html.includes(`data-legal="${doc.slug}"`)) {
+    problems.push(`body is missing data-legal="${doc.slug}"`);
+  }
+  // Compared against the escaped form: "Terms & Conditions" is `&amp;` in the file.
+  if (!html.includes(`<title>${esc(doc.metaTitle)}</title>`)) {
+    problems.push(`<title> does not match metaTitle in src/content/legal.ts`);
+  }
+  if (!html.includes(`href="https://flitetransport.com${doc.path}"`)) {
+    problems.push(`canonical does not match the path in src/content/legal.ts`);
+  }
+
+  if (problems.length) {
+    console.error(
+      `[prerender] ${label} is out of step with src/content/legal.ts:\n` +
+        problems.map((p) => `            - ${p}`).join('\n') +
+        '\n            Not writing.'
+    );
+    process.exit(1);
+  }
 }
 
 /**
@@ -244,9 +365,16 @@ async function inject(file, label, shell, { faqSchema = false } = {}) {
 await inject(distIndex, 'dist/index.html', buildShell());
 await inject(distFaq, 'dist/faq/index.html', buildFaqShell(), { faqSchema: true });
 
+for (const doc of Object.values(legalDocs)) {
+  const file = join(root, 'dist', doc.slug, 'index.html');
+  const label = `dist/${doc.slug}/index.html`;
+  checkLegalHead(await readFile(file, 'utf8'), doc, label);
+  await inject(file, label, buildLegalShell(doc));
+}
+
 await writeFile(join(root, 'dist', 'llms.txt'), buildLlmsTxt(), 'utf8');
 
 console.log(
-  '[prerender] Injected static content into dist/index.html and dist/faq/index.html, ' +
+  `[prerender] Injected static content into ${2 + Object.keys(legalDocs).length} documents ` +
     'and wrote dist/llms.txt'
 );

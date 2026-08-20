@@ -59,6 +59,8 @@
   --z-route: 1;
   --z-content: 2;
   --z-masthead: 40;
+  /* Over the masthead, under the skip link: the consent bar must never cover the skip target. */
+  --z-consent: 50;
   --z-skip: 60;
 }
 

@@ -964,10 +964,27 @@ main,
   padding-block: var(--space-9) var(--space-8);
 }
 
+/*
+ * Two steps rather than one. At 760px four columns would leave the link lists narrow enough that
+ * "Terms & Conditions" wraps to three lines, so the middle range pairs them up instead and the
+ * full four-column base from DESIGN.md arrives when there is room for it.
+ */
 @media (min-width: 760px) {
   .footer__inner {
-    grid-template-columns: minmax(0, 2fr) minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: var(--space-8);
+  }
+  .footer__brand {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (min-width: 1040px) {
+  .footer__inner {
+    grid-template-columns: minmax(0, 1.7fr) repeat(3, minmax(0, 1fr));
+  }
+  .footer__brand {
+    grid-column: auto;
   }
 }
 
@@ -1030,6 +1047,376 @@ main,
   padding-block: var(--space-5);
   font-size: 0.875rem;
   color: var(--muted);
+}
+
+.footer__baseInner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3) var(--space-6);
+}
+
+/* Styled as the link it behaves like, while staying a button for assistive tech and keyboards. */
+.footer__prefs {
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-color: var(--line-strong);
+  transition: color var(--dur-hover) var(--ease-out);
+}
+.footer__prefs:hover {
+  color: var(--red);
+}
+
+/* =========================================================================
+   Legal documents
+   ========================================================================= */
+
+/*
+ * Privacy, cookies, terms and accessibility share this. It is the eighth layout family on the
+ * site and the only two-column one: a sticky contents rail beside the prose.
+ *
+ * The rail is the whole point. Nobody reads a privacy policy front to back; they arrive with one
+ * question and scan for the heading that answers it, and on a document this long that is a scroll
+ * hunt unless the headings are listed. The red marker that slides onto a hovered entry is the
+ * route line's vocabulary reused at small scale, which is why it is a left border and not a
+ * highlight.
+ */
+
+.legal__head {
+  padding-block: var(--space-9) var(--space-7);
+}
+
+.legal__crumb {
+  font-family: var(--font-mono);
+  font-size: var(--step-small);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: var(--space-5);
+}
+.legal__crumb a:hover {
+  color: var(--red);
+}
+
+.legal__head h1 {
+  max-width: 18ch;
+}
+
+.legal__lead {
+  margin-top: var(--space-5);
+  max-width: 58ch;
+  color: var(--text-body);
+}
+
+.legal__stamp {
+  margin-top: var(--space-6);
+  font-family: var(--font-mono);
+  font-size: var(--step-small);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.legal__body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-8);
+  padding-bottom: var(--space-10);
+}
+
+@media (min-width: 1040px) {
+  .legal__body {
+    grid-template-columns: minmax(0, 250px) minmax(0, 1fr);
+    gap: var(--space-10);
+    align-items: start;
+  }
+
+  .legal__toc {
+    /* Clears the 72px masthead. Scrolls itself if the document has more headings than fit. */
+    position: sticky;
+    top: calc(72px + var(--space-6));
+    max-height: calc(100vh - 72px - var(--space-8));
+    overflow-y: auto;
+  }
+}
+
+.legal__tocTitle {
+  font-family: var(--font-mono);
+  font-size: var(--step-small);
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: var(--space-4);
+}
+
+.legal__toc ol {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-left: 1px solid var(--line);
+}
+
+.legal__toc a {
+  display: block;
+  /* Pulled back over the rail so the hover marker replaces the hairline rather than sitting beside it. */
+  margin-left: -1px;
+  border-left: 1px solid transparent;
+  padding: var(--space-2) var(--space-4);
+  font-size: 0.875rem;
+  line-height: 1.45;
+  color: var(--muted);
+  transition:
+    color var(--dur-hover) var(--ease-out),
+    border-color var(--dur-hover) var(--ease-out);
+}
+.legal__toc a:hover {
+  color: var(--red);
+  border-left-color: var(--red);
+}
+
+.legal__section {
+  /* Anchor jumps must not land the heading underneath the sticky masthead. */
+  scroll-margin-top: calc(72px + var(--space-5));
+  margin-top: var(--space-7);
+  padding-top: var(--space-7);
+  border-top: 1px solid var(--line);
+}
+.legal__section:first-child {
+  margin-top: 0;
+  padding-top: 0;
+  border-top: 0;
+}
+
+/* The global h2 is display scale, which is for section headings on the marketing pages. A legal
+   document has thirty of them and they are signposts, not statements. */
+.legal__section h2 {
+  font-size: clamp(1.1875rem, 1.08rem + 0.5vw, 1.5rem);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  margin-bottom: var(--space-4);
+}
+
+.legal__prose p {
+  max-width: 68ch;
+  color: var(--text-body);
+}
+.legal__prose p + p {
+  margin-top: var(--space-4);
+}
+
+.legal__prose a {
+  color: var(--red);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.legal__list {
+  max-width: 68ch;
+  margin-top: var(--space-4);
+  padding-left: var(--space-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  color: var(--text-body);
+}
+
+/* Wide content scrolls itself; the page body never scrolls sideways. */
+.legal__tableWrap {
+  margin-top: var(--space-5);
+  overflow-x: auto;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+}
+
+.legal__table {
+  width: 100%;
+  min-width: 620px;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 0.9375rem;
+}
+
+.legal__table th,
+.legal__table td {
+  padding: var(--space-4);
+  vertical-align: top;
+  border-bottom: 1px solid var(--line);
+}
+
+.legal__table thead th {
+  font-family: var(--font-mono);
+  font-size: var(--step-small);
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  background: var(--surface-2);
+  white-space: nowrap;
+}
+
+.legal__table tbody th {
+  font-weight: 400;
+  white-space: nowrap;
+}
+
+.legal__table tbody td {
+  color: var(--text-body);
+}
+
+.legal__table tbody tr:last-child th,
+.legal__table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.legal__table code {
+  font-family: var(--font-mono);
+  font-size: 0.875em;
+  color: var(--text);
+}
+
+.legal__aside {
+  margin-top: var(--space-9);
+  padding: var(--space-7);
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-4);
+}
+.legal__aside h2 {
+  font-size: clamp(1.25rem, 1.1rem + 0.6vw, 1.625rem);
+}
+
+.legal__siblings {
+  margin-top: var(--space-8);
+}
+.legal__siblings ul {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3) var(--space-6);
+  font-size: 0.9375rem;
+}
+.legal__siblings a {
+  color: var(--text);
+  transition: color var(--dur-hover) var(--ease-out);
+}
+.legal__siblings a:hover {
+  color: var(--red);
+}
+
+/* =========================================================================
+   Cookie consent
+   ========================================================================= */
+
+/*
+ * The masthead's bookend: a full-bleed bar pinned to the opposite edge, same hairline, same
+ * surface vocabulary. Deliberately not a floating card. There are no shadows anywhere in this
+ * system and no rounded panels, so a card would have had to invent both.
+ *
+ * Transitions rather than keyframes, so a dismissal that interrupts the entrance retargets from
+ * where the bar actually is instead of snapping to the bottom and starting again.
+ */
+
+.consent {
+  position: fixed;
+  inset-inline: 0;
+  bottom: 0;
+  z-index: var(--z-consent);
+  background: var(--surface-2);
+  border-top: 1px solid var(--line-strong);
+
+  /* Percentage, so the bar always starts exactly its own height below the fold whatever the copy
+     wraps to. */
+  transform: translateY(100%);
+  opacity: 0;
+  transition:
+    transform 340ms var(--ease-out),
+    opacity 240ms var(--ease-out);
+}
+
+.consent[data-state='shown'] {
+  transform: none;
+  opacity: 1;
+}
+
+/* Leaving is faster than arriving: the visitor has answered and wants the page back. */
+.consent[data-state='leaving'] {
+  transform: translateY(100%);
+  opacity: 0;
+  transition-duration: 200ms, 160ms;
+}
+
+.consent__panel {
+  width: var(--shell);
+  margin-inline: auto;
+  display: grid;
+  gap: var(--space-5);
+  padding-block: var(--space-5);
+}
+
+@media (min-width: 900px) {
+  .consent__panel {
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: var(--space-8);
+  }
+}
+
+.consent__title {
+  font-family: var(--font-mono);
+  font-size: var(--step-small);
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: var(--space-3);
+}
+
+.consent__body {
+  max-width: 74ch;
+  font-size: 0.9375rem;
+  color: var(--text-body);
+}
+
+.consent__body a {
+  color: var(--red);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.consent__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+/*
+ * Identical width, side by side, one click each. Refusal that is harder to reach than acceptance
+ * is the pattern consent law is most consistently enforced against, and it would read as a lie on
+ * a bar whose text says we do not track anyone.
+ */
+.consent__actions .btn {
+  flex: 1 1 auto;
+  justify-content: center;
+  min-width: 9.5rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* Fade only. The bar still announces itself; it just does not travel. */
+  .consent,
+  .consent[data-state='leaving'] {
+    transform: none;
+  }
 }
 
 /* =========================================================================
@@ -1127,6 +1514,18 @@ main,
   .footer__social a,
   .footer__nav a {
     padding-block: var(--space-1);
+  }
+
+  /* The bar can occupy at most half a small viewport, and scrolls inside itself if the copy is
+     long enough to need it. A consent prompt that buries the page is a dark pattern by accident. */
+  .consent__panel {
+    max-height: 50vh;
+    overflow-y: auto;
+  }
+
+  .legal__head h1,
+  .legal__lead {
+    max-width: none;
   }
 
   .caps__static {

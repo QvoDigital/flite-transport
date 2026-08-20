@@ -1,4 +1,5 @@
 import { ArrowRight } from '@phosphor-icons/react';
+import { CookieBanner } from '../components/CookieBanner';
 import { Footer } from '../components/Footer';
 import { Masthead } from '../components/Masthead';
 import { contact, cta, faqs } from '../content/site';
@@ -24,6 +25,8 @@ export function FaqPage() {
       <a className="skip" href="#main">
         Skip to content
       </a>
+
+      <CookieBanner />
 
       <Masthead />
 

@@ -103,6 +103,12 @@ nothing competes for frames.
 `requestAnimationFrame` loop touching React state. Every GSAP context is reverted on unmount. Only
 `transform` and `opacity` are animated, plus `stroke-dashoffset` on the route, which is composited.
 
+**One exception: the consent bar animates with CSS, not GSAP.** The rule above is about the home
+page's scroll choreography. The bar also renders on `/faq` and the four legal documents, which load
+no GSAP at all, and pulling the library onto those pages to fade one element in would cost more than
+the element is worth. Transitions rather than keyframes, so an interrupted dismissal retargets from
+where the bar is instead of restarting.
+
 **Reduced motion.** Under `prefers-reduced-motion: reduce` the route renders complete and static,
 the pin is dropped so the service levels stack vertically, and reveals become instant. No content
 is lost and nothing is gated behind an animation.
@@ -121,6 +127,17 @@ splits.
 | 5 | An extension of your business | Full-bleed editorial text, no media |
 | 6 | Contact | Split form and detail column |
 | 7 | Footer | Four-column base |
+| 8 | Legal documents | Sticky contents rail beside prose |
+
+The legal pages (`/privacy/`, `/cookies/`, `/terms/`, `/accessibility/`) add the eighth family. It
+is the only two-column reading layout on the site, which is right for the only content nobody reads
+front to back: people arrive at a privacy policy with one question, so the headings are listed and
+the rail is one click rather than a scroll hunt. The red marker that slides onto a hovered entry is
+the route line's vocabulary at small scale.
+
+The consent bar is the masthead's bookend — full-bleed, pinned to the opposite edge, same hairline
+and surface. Deliberately not a floating card: there are no shadows and no rounded panels anywhere
+in this system, so a card would have had to invent both.
 
 ## 6. Content integrity
 
@@ -131,6 +148,14 @@ it comes from the live flitetransport.com.
 testimonials, no client names, no certifications, no coverage area, no fleet size, no delivery
 guarantees, no pricing, no years-in-business. If a claim is not in that file it does not appear on
 the site.
+
+`src/content/legal.ts` is the one place this rule is adapted rather than applied, because a legal
+page exists to describe practice and the previous site published none. Every claim there about what
+the *website* does was verified against this repository; every claim about the *business* that could
+not be was left out. That file's header records both the verification and the open questions. The
+website terms deliberately say nothing about carriage, liability for goods or service levels: those
+belong in the customer agreement, and inventing them here would be the exact failure this rule
+exists to prevent.
 
 The one real figure the company publishes is that last mile delivery can account for **up to 30% of
 overall delivery costs**. That is why it earns a full section instead of being buried in a paragraph.
@@ -146,3 +171,11 @@ reproduced: `customers expectations` gains its apostrophe, and `We strives` beco
 - Focus rings: `2px` solid red at `2px` offset, visible on every interactive element.
 - Form labels sit above inputs, errors inline below, no placeholder-as-label.
 - Service level track is reachable by keyboard and readable when the pin is disabled.
+- The consent bar is non-modal: it does not trap focus, does not block reading and does not steal
+  focus on arrival. It sits early in the DOM and late on the screen, so tab order reaches it right
+  after the skip link. Focus moves into it only when the visitor opens it from the footer, which is
+  the one case where they asked for it. Accept and Decline are the same size, side by side, one
+  click each.
+- `/accessibility/` is a public statement of this floor, including what is not done yet. It is
+  written against the AODA and its Integrated Accessibility Standards, which is the regime that
+  applies in Ontario.
